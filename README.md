@@ -84,6 +84,13 @@ Implemented in the **Order Service** to solve the "Dual Write" problem.
 *   **Idempotency Key**: Clients send a unique `idempotencyKey` in the request header/body. The service checks for its existence in the database before processing.
 *   **Safety**: If a request is retried, the system returns the existing record's state instead of creating a new one, ensuring exactly-once processing for business operations.
 
+### 8. **API Rate Limiting (Token Bucket)**
+*   **Edge Protection**: Implemented on the **API Gateway** using **Redis** to protect the system from DDoS attacks and brute-force attempts.
+*   **Token Bucket Algorithm**: Each user/IP is allocated a 'bucket' of tokens. Every request consumes a token. If the bucket is empty, the request is rejected with `429 Too Many Requests`.
+*   **Dynamic Limits**: 
+    *   **Domain Services**: 10 requests/sec with 20 burst capacity.
+    *   **Security/Auth**: 5 requests/sec with 10 burst capacity for enhanced brute-force resistance.
+
 ---
 
 ## 📖 API Documentation & Contract
@@ -148,8 +155,8 @@ mvn clean install -DskipTests
 
 ## 📈 Future Roadmap
 - [x] Implement Idempotency Pattern for Orders & Reservations.
+- [x] Add API Rate Limiting (Token Bucket) on Gateway.
 - [ ] Implement Centralized Configuration (Spring Cloud Config).
-- [ ] Add API Rate Limiting (Token Bucket) on Gateway.
 - [ ] Implement Saga Compensating Transactions (Rollback logic).
 
 ---
