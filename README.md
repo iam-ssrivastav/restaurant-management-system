@@ -8,35 +8,9 @@ This project serves as a showcase for **Advanced Distributed Systems Patterns**,
 
 ## 🏗 System Architecture
 
+![RMS Technical Architecture](docs/images/architecture_block_diagram.png)
+
 The RMS architecture follows the **Database-per-Service** and **Event-Driven** paradigms, ensuring loose coupling and independent scalability.
-
-```mermaid
-graph TD
-    User((User/App)) --> Gateway[API Gateway :8080]
-    Gateway --> Auth[JWT Security]
-    Gateway --> Discovery[Eureka Server :8761]
-    
-    subgraph "Service Mesh"
-        OrderSvc[Order Service :8081]
-        RestSvc[Restaurant Service :8082]
-        KitchenSvc[Kitchen Service :8084]
-        DeliverySvc[Delivery Service :8085]
-        AccountSvc[Accounting Service :8086]
-        NotifSvc[Notification Service :8083]
-    end
-
-    subgraph "Infrastructure"
-        Kafka[Apache Kafka :29092]
-        Redis[Redis Cache :6379]
-        Postgres[(PostgreSQL :5432)]
-        Zipkin[Zipkin Tracing :9411]
-    end
-
-    OrderSvc -- Transactional Outbox --> Kafka
-    Kafka -- Choreography Saga --> KitchenSvc
-    RestSvc -- Distributed Caching --> Redis
-    NotifSvc -- Event Consumer --> Kafka
-```
 
 ---
 
