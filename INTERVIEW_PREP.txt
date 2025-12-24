@@ -1,0 +1,60 @@
+RESTAURANT MANAGEMENT SYSTEM - INTERVIEW PREPARATION GUIDE
+
+SECTION 1: HIGH LEVEL PROJECT OVERVIEW
+
+Q1: Can you describe your project?
+Answer: I built an enterprise grade Restaurant Management System using a cloud native Microservices architecture. The core focus was solving distributed systems challenges like data consistency, service resilience, and sub millisecond performance.
+
+Q2: What is the benefit of this architecture?
+Answer: In a restaurant environment, order failures or duplicate charges are unacceptable. This architecture ensures every order is processed reliably, every menu update is visible instantly, and any system failure is handled gracefully without affecting the user experience.
+
+SECTION 2: SERVICE DISCOVERY AND ROUTING
+
+Q3: Why did you use Eureka Server?
+Answer: With multiple microservices, I cannot hardcode IP addresses. Eureka acts as a service registry. Every service registers its live location here. If I start multiple instances of a service, the Gateway asks Eureka where they are, and Eureka handles the load balancing.
+
+Q4: Why does the Eureka Server have only one class?
+Answer: It uses Spring Cloud Netflix Eureka. The EnableEurekaServer annotation tells Spring Boot to start the full registry engine from the library. All the heavy lifting for registration, heartbeats, and discovery is handled by the framework.
+
+Q5: What is the role of the API Gateway?
+Answer: Every request hits the Gateway first. It uses Spring Cloud Gateway and JWT for security. It validates tokens and routes requests to the correct service. It also handles edge concerns like Rate Limiting.
+
+SECTION 3: DATA CONSISTENCY AND MESSAGING
+
+Q6: How do you handle transactions across services?
+Answer: I implemented a Choreography based Saga pattern using Apache Kafka. When an order is created, it triggers events across Kitchen, Delivery, and Accounting services. This ensures eventual consistency across the entire system.
+
+Q7: What is the Transactional Outbox pattern?
+Answer: It solves the Dual Write problem. Instead of sending messages to Kafka directly, I save the event in a local database table within the same transaction as the business entity. A background poller then picks it up and sends it to Kafka, ensuring the message is never lost even if Kafka is temporarily down.
+
+SECTION 4: PERFORMANCE AND CACHING
+
+Q8: How did you optimize for high read traffic?
+Answer: I used CQRS (Command Query Responsibility Segregation) in the Restaurant Service to separate write and read concerns. I integrated Redis as a distributed cache. For the Menu API, the first request hits the DB, and subsequent requests are served from Redis in under 5ms.
+
+Q9: How do you handle cache invalidation?
+Answer: I use the CacheEvict annotation. Whenever a manager updates a menu item via the Command Service, the Redis cache is automatically cleared to prevent serving stale data to customers.
+
+SECTION 5: RELIABILITY AND IDEMPOTENCY
+
+Q10: What is Idempotency and why is it important here?
+Answer: It ensures that if a user clicks Order twice due to a slow retry, the system does not create a second order. Clients send a unique idempotencyKey. The service checks the database before processing. If the key exists, it returns the existing data instead of creating a new record.
+
+Q11: How do you handle service failures?
+Answer: I integrated Resilience4j for fault tolerance. I used Circuit Breakers to prevent cascading failures and Retries with Exponential Backoff for temporary network issues.
+
+SECTION 6: SECURITY AND RATE LIMITING
+
+Q12: How do you protect your APIs from abuse?
+Answer: I implemented API Rate Limiting on the Gateway using the Token Bucket algorithm. It is backed by Redis to manage state across multiple Gateway instances.
+
+Q13: Why did you use Redis for Rate Limiting?
+Answer: Since the Gateway can have multiple instances, an in memory limit would not work. Redis allows for a centralized count. Using Redis Lua scripts ensures the check and decrement operation is atomic and fast.
+
+SECTION 7: OBSERVABILITY
+
+Q14: How do you debug a request that spans multiple services?
+Answer: I used Distributed Tracing with Zipkin. Every request gets a unique TraceID. I can see exactly how long a request spent in the Gateway, the Order Service, and Kafka, allowing me to pinpoint bottlenecks instantly.
+
+DOCUMENT STATUS: OPERATIONAL AND ENTERPRISE READY
+AUTHOR: SHIVAM SRIVASTAV
