@@ -2,7 +2,20 @@
 
 Welcome to the **Restaurant Management System (RMS)**, a premium, enterprise-grade microservices ecosystem designed to handle high-concurrency restaurant operations with extreme reliability and resilience.
 
-This project serves as a showcase for **Advanced Distributed Systems Patterns**, implementing state-of-the-art architectural solutions for modern cloud-native challenges.
+## 📖 About the Project
+
+This project is a sophisticated demonstration of modern distributed systems architecture. It goes beyond a simple CRUD application, implementing complex patterns to solve real-world challenges in a distributed environment:
+
+### Core Objectives:
+*   **High Availability**: A microservices mesh where each service operates and scales independently.
+*   **Data Integrity**: Ensuring consistent state across services using the **Saga Pattern** and **Transactional Outbox**.
+*   **Performance**: Sub-millisecond read latency via **Distributed Caching (Redis)** and **CQRS**.
+*   **Robustness**: Built-in fault tolerance with **Circuit Breakers** and **Idempotency** for exactly-once processing.
+
+### Why this architecture?
+In a typical restaurant environment, order failures or duplicate charges are unacceptable. RMS ensures that every order placed is processed reliably, every menu update is visible instantly, and every system failure is handled gracefully without affecting the user experience.
+
+---
 
 ---
 
