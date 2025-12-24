@@ -1,0 +1,14 @@
+target/
+!.mvn/wrapper/maven-wrapper.jar
+.DS_Store
+.idea/
+*.log
+*.iml
+.settings/
+.classpath
+.project
+.factorypath
+bin/
+logs/
+nohup.out
+dependency-reduced-pom.xml

@@ -1,0 +1,104 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+          lower-case-service-id: true
+      routes:
+        - id: order-service
+          uri: lb://order-service
+          predicates:
+            - Path=/api/v1/orders/**
+          filters:
+            - AuthenticationFilter
+        - id: restaurant-service
+          uri: lb://restaurant-service
+          predicates:
+            - Path=/api/v1/restaurants/**
+          filters:
+            - AuthenticationFilter
+        - id: kitchen-service
+          uri: lb://kitchen-service
+          predicates:
+            - Path=/api/v1/kitchen/**
+          filters:
+            - AuthenticationFilter
+        - id: delivery-service
+          uri: lb://delivery-service
+          predicates:
+            - Path=/api/v1/delivery/**
+          filters:
+            - AuthenticationFilter
+        - id: accounting-service
+          uri: lb://accounting-service
+          predicates:
+            - Path=/api/v1/accounting/**
+          filters:
+            - AuthenticationFilter
+        - id: auth-service
+          uri: lb://api-gateway
+          predicates:
+            - Path=/auth/**
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    urls:
+      - name: Order Service
+        url: /api/v1/orders/v3/api-docs
+      - name: Restaurant Service
+        url: /api/v1/restaurants/v3/api-docs
+      - name: Kitchen Service
+        url: /api/v1/kitchen/v3/api-docs
+      - name: Delivery Service
+        url: /api/v1/delivery/v3/api-docs
+      - name: Accounting Service
+        url: /api/v1/accounting/v3/api-docs
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    prometheus:
+      enabled: true
+    metrics:
+      enabled: true
+    health:
+      show-details: always
+  tracing:
+    sampling:
+      probability: 1.0 
+    kafka:
+      remote-service-name: kafka-broker
+    jdbc:
+      remote-service-name: postgres-db
+
+logging:
+  pattern:
+    level: "%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]"
+  level:
+    org.springframework.cloud.gateway: INFO
+    org.springframework.security: INFO
+
+eureka:
+  instance:
+    data-center-name: RMS-Service-Cluster
+    instance-id: ${spring.application.name}:${server.port}
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/
+
+# JWT Secret for generating/validating tokens (HS256)
+jwt:
+  secret: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
+  expiration: 86400000 # 24 hours
